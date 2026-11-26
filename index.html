@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpendWise — Personal Expense Tracker</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    header p {
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .summary-label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .total-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    button.add-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button.add-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .expense-list {
+      list-style: none;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+    }
+
+    .expense-item:last-child {
+      border-bottom: none;
+    }
+
+    .expense-title {
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      background: #e6fffa;
+      color: var(--primary);
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      margin-left: 0.4rem;
+    }
+
+    .expense-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .expense-amount {
+      font-weight: 700;
+    }
+
+    .delete-btn {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      width: auto;
+    }
+
+    .delete-btn:hover {
+      background: #fef2f2;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 1rem 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 640px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SpendWise</h1>
+      <p>Track your daily expenses and stay on top of your budget</p>
+    </header>
+
+    <section class="card summary">
+      <div>
+        <div class="summary-label">Total Spending</div>
+        <div class="total-amount" id="totalAmount">$0.00</div>
+      </div>
+      <div class="summary-label" id="itemCount">0 expenses recorded</div>
+    </section>
+
+    <section class="card">
+      <form id="expenseForm">
+        <div>
+          <label for="titleInput">Expense</label>
+          <input id="titleInput" type="text" placeholder="e.g., Groceries" required />
+        </div>
+        <div>
+          <label for="amountInput">Amount ($)</label>
+          <input id="amountInput" type="number" step="0.01" min="0.01" placeholder="25.00" required />
+        </div>
+        <div>
+          <label for="categoryInput">Category</label>
+          <select id="categoryInput">
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Bills">Bills</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <button type="submit" class="add-btn">Add</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <ul class="expense-list" id="expenseList"></ul>
+    </section>
+
+    <footer>
+      SpendWise &bull; Personal Expense Tracker &bull; Deployed with GitHub &amp; Netlify
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "spendwise_expenses_v1";
+    const form = document.getElementById("expenseForm");
+    const titleInput = document.getElementById("titleInput");
+    const amountInput = document.getElementById("amountInput");
+    const categoryInput = document.getElementById("categoryInput");
+    const expenseList = document.getElementById("expenseList");
+    const totalAmountEl = document.getElementById("totalAmount");
+    const itemCountEl = document.getElementById("itemCount");
+
+    let expenses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    function saveExpenses() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+    }
+
+    function formatMoney(num) {
+      return "$" + Number(num).toFixed(2);
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function render() {
+      expenseList.innerHTML = "";
+      let total = 0;
+
+      if (expenses.length === 0) {
+        expenseList.innerHTML = '<li class="empty-state">No expenses yet. Add your first one above!</li>';
+      } else {
+        expenses.forEach((exp) => {
+          total += exp.amount;
+          const li = document.createElement("li");
+          li.className = "expense-item";
+          li.innerHTML = `
+            <div>
+              <span class="expense-title">${escapeHtml(exp.title)}</span>
+              <span class="badge">${escapeHtml(exp.category)}</span>
+            </div>
+            <div class="expense-right">
+              <span class="expense-amount">${formatMoney(exp.amount)}</span>
+              <button class="delete-btn" data-id="${exp.id}" aria-label="Delete expense">Delete</button>
+            </div>
+          `;
+          expenseList.appendChild(li);
+        });
+      }
+
+      totalAmountEl.textContent = formatMoney(total);
+      itemCountEl.textContent = `${expenses.length} ${expenses.length === 1 ? "expense" : "expenses"} recorded`;
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      const category = categoryInput.value;
+
+      if (!title || isNaN(amount) || amount <= 0) return;
+
+      expenses.unshift({
+        id: Date.now().toString(),
+        title,
+        amount,
+        category
+      });
+
+      saveExpenses();
+      render();
+      form.reset();
+      titleInput.focus();
+    });
+
+    expenseList.addEventListener("click", (e) => {
+      if (e.target.matches(".delete-btn")) {
+        const id = e.target.getAttribute("data-id");
+        expenses = expenses.filter((exp) => exp.id !== id);
+        saveExpenses();
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
